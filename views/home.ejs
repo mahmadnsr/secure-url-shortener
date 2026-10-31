@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/home.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>URL Shortener</h2>
+            <div class="user">
+                Welcome, <%= user ? user.name : "Guest" %> 👋
+                <a href="/logout" class="logout-btn">Logout</a>
+            </div>
+        </div>
+
+        <% if (locals.shortURL) { %>
+            <div class="success">
+                Your short URL is created: <br><br>
+                <a href="<%= locals.baseUrl || 'http://localhost:8001' %>/api/url/<%= shortURL %>" target="_blank">
+                    <%= locals.baseUrl || 'http://localhost:8001' %>/api/url/<%= shortURL %>
+                </a>
+            </div>
+        <% } %>
+
+        <form method="POST" action="/api/url">
+            <input type="text" name="redirected_url" placeholder="https://example.com" required>
+            <button type="submit">Generate</button>
+        </form>
+
+        <% if (locals.urls && urls.length > 0) { %>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Short URL</th>
+                        <th>Original URL</th>
+                        <th>Clicks</th>
+                        <th>Analytics</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% urls.forEach((url, index) => { %>
+                    <tr>
+                        <td><%= index + 1 %></td>
+                        <td>
+                            <a href="<%= locals.baseUrl || 'http://localhost:8001' %>/api/url/<%= url.shortURL %>" target="_blank">
+                                <%= url.shortURL %>
+                            </a>
+                        </td>
+                        <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            <%= url.redirected_url %>
+                        </td>
+                        <td><strong><%= url.visit_history.length %></strong></td>
+                        <td>
+                            <a href="/api/url/analytics/<%= url.shortURL %>" target="_blank" class="analytics-btn">View</a>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        <% } else { %>
+            <p style="text-align:center; color:#777; margin-top:20px;">No URLs shortened yet.</p>
+        <% } %>
+    </div>
+</body>
+</html>

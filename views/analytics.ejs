@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - <%= shortURL %></title>
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/analytics.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>URL Analytics</h2>
+            <a href="/" class="back-btn">← Back to Home</a>
+        </div>
+
+        <div class="stats-card">
+            <div>
+                <h3>Short URL: <a href="/api/url/<%= shortURL %>" target="_blank" style="color:#007bff;">/<%= shortURL %></a></h3>
+                <p class="original-link">Redirects to: <%= redirected_url %></p>
+            </div>
+            <div>
+                <span class="count"><%= totalClicks %></span> Total Clicks
+            </div>
+        </div>
+
+        <% if (visitHistory.length > 0) { %>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Click Time (Local)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% visitHistory.forEach((visit, index) => { %>
+                    <tr>
+                        <td><%= index + 1 %></td>
+                        <td><%= new Date(visit.timestamp).toLocaleString() %></td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        <% } else { %>
+            <p style="text-align:center; color:#777; margin-top:30px; font-size:18px;">
+                No clicks yet. Share your link to get started! 🚀
+            </p>
+        <% } %>
+    </div>
+</body>
+</html>

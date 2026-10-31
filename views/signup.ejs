@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/signup.css">
+</head>
+<body>
+    <div class="auth-card">
+        <h2>Create Account</h2>
+        
+        <% if (locals.error) { %>
+            <div class="server-error"><%= error %></div>
+        <% } %>
+
+        <form action="/api/url/signup" method="POST" id="signupForm">
+            
+            <div class="form-group">
+                <label for="name">Enter your Name</label>
+                <input type="text" id="name" name="name" placeholder="Enter your name" required>
+                <span class="error-text" id="name-error">Only alphabets and spaces allowed (2-50 chars)</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Enter your Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                <span class="error-text" id="email-error">Please enter a valid email address</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Enter your Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                <span class="error-text" id="password-error">Min 8 chars, include Uppercase, Lowercase, Number & Special Char</span>
+            </div>
+            
+            <button type="submit" id="submitBtn">Sign Up</button>
+        </form>
+        <p>Already have an account? <a href="/login">Login</a></p>
+    </div>
+
+    <script>
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const form = document.getElementById('signupForm');
+
+        // Improved Regex: Matches 8+ chars, 1 Upper, 1 Lower, 1 Number, 1 Special Char (ANY special char)
+        const pwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9\s]).{8,}$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const nameRegex = /^[A-Za-z\s]{2,50}$/;
+
+        nameInput.addEventListener('input', function() {
+            let val = this.value;
+            if (/[^A-Za-z\s]/.test(val)) {
+                this.value = val.replace(/[^A-Za-z\s]/g, ''); 
+                showError(nameInput, 'name-error');
+            } else if (val.length > 0 && !nameRegex.test(val)) {
+                showError(nameInput, 'name-error');
+            } else {
+                hideError(nameInput, 'name-error');
+            }
+        });
+
+        emailInput.addEventListener('input', function() {
+            if (this.value.length > 0 && !emailRegex.test(this.value)) {
+                showError(emailInput, 'email-error');
+            } else {
+                hideError(emailInput, 'email-error');
+            }
+        });
+
+        passwordInput.addEventListener('input', function() {
+            if (this.value.length > 0 && !pwdRegex.test(this.value)) {
+                showError(passwordInput, 'password-error');
+            } else {
+                hideError(passwordInput, 'password-error');
+            }
+        });
+
+        function showError(inputElement, errorId) {
+            inputElement.classList.add('input-error');
+            document.getElementById(errorId).classList.add('show');
+        }
+
+        function hideError(inputElement, errorId) {
+            inputElement.classList.remove('input-error');
+            document.getElementById(errorId).classList.remove('show');
+        }
+
+        // Form submit validation without ugly alerts
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+            
+            if (!nameRegex.test(nameInput.value)) {
+                showError(nameInput, 'name-error');
+                isValid = false;
+            }
+            if (!emailRegex.test(emailInput.value)) {
+                showError(emailInput, 'email-error');
+                isValid = false;
+            }
+            if (!pwdRegex.test(passwordInput.value)) {
+                showError(passwordInput, 'password-error');
+                isValid = false;
+            }
+
+            if (!isValid) {
+                e.preventDefault(); // Stop form submission
+            }
+        });
+    </script>
+</body>
+</html>
